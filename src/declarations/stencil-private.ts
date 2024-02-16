@@ -1333,6 +1333,12 @@ export interface RenderNode extends HostElement {
   host?: Element;
 
   /**
+   * On Ref Function:
+   * Callback function to be called when the slotted node ref is ready.
+   */
+  ['s-rf']?: (elm: Element) => unknown;
+
+  /**
    * Is initially hidden
    * Whether this node was originally rendered with the `hidden` attribute.
    *
