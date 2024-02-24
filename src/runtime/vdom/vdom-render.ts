@@ -1060,20 +1060,23 @@ render() {
             !BUILD.experimentalSlotFixes ||
             (insertBeforeNode && insertBeforeNode.nodeType === NODE_TYPE.ElementNode)
           ) {
-            let orgLocationNode = nodeToRelocate['s-ol']?.previousSibling as d.RenderNode | null;
+            // first check the relocating node has already a reference node since the node might have already been
+            // relocated. So in that case we already have a correct order and do NOT need to change the order
+            if (!nodeToRelocate['s-ol']?.['s-nr']) {
+              let orgLocationNode = nodeToRelocate['s-ol']?.previousSibling as d.RenderNode | null;
+              while (orgLocationNode) {
+                let refNode = orgLocationNode['s-nr'] ?? null;
 
-            while (orgLocationNode) {
-              let refNode = orgLocationNode['s-nr'] ?? null;
-
-              if (refNode && refNode['s-sn'] === nodeToRelocate['s-sn'] && parentNodeRef === refNode.parentNode) {
-                refNode = refNode.nextSibling as any;
-                if (!refNode || !refNode['s-nr']) {
-                  insertBeforeNode = refNode;
-                  break;
+                if (refNode && refNode['s-sn'] === nodeToRelocate['s-sn'] && parentNodeRef === refNode.parentNode) {
+                  refNode = refNode.nextSibling as any;
+                  if (!refNode || !refNode['s-nr']) {
+                    insertBeforeNode = refNode;
+                    break;
+                  }
                 }
-              }
 
-              orgLocationNode = orgLocationNode.previousSibling as d.RenderNode | null;
+                orgLocationNode = orgLocationNode.previousSibling as d.RenderNode | null;
+              }
             }
           }
 
